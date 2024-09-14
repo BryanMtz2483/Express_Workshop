@@ -4,6 +4,7 @@
   "description": "An API REST using express.js",
   "main": "index.js",
   "scripts": {
+    "start": "nodemon index",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -12,9 +13,18 @@
     "express",
     "nodejs"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BryanMtz2483/Express_Workshop.git"
+  },
   "author": "Bryan Giovanny Martinez Tinoco",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BryanMtz2483/Express_Workshop/issues"
+  },
+  "homepage": "https://github.com/BryanMtz2483/Express_Workshop#readme",
   "dependencies": {
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "nodemon": "^3.1.4"
   }
 }
