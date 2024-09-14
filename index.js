@@ -23,7 +23,7 @@ app.get('/', (req, res, next) =>{ //podemos utilizar los verbos http utilizando 
     //const pokemon = pokedex; //mandamos a llamar a la bd y "pokemon" es el arreglo o llave que contiene todos los datos de los pokemones de la bd descargada. 
     res.status(200); //Código 200 equivale a que todo salió bien y que recuperamos la información de manera correcta.
     //res.send(pokemon); //enviamos en el servidor la llave para que se impriman los datos en el mismo, en este caso es el json completo de los pokemons
-    res.send("Bienvenido al Pokedex")
+    res.send("Bienvenido al Pokedex");
 });
 /*
 app.get("/nombre", (req,res,next) =>{
@@ -37,7 +37,7 @@ app.get("/:name", (req,res,next) =>{//se ponen los dos puntos para hacer que nom
     res.status(200);
     res.send("Bienvenido " + req.params.name); //aquí se imprime un mensaje de bienvenida y se concatena el parametro que se pidió en la url usando el req.params."variable"
 });*/
-app.get('/pokemon/all', (req,res,next) => {
+app.get('/pokemon', (req,res,next) => {
     res.status(200);
     res.send(pokemon);
 }); //mandamos llamar a el arreglo completo de los pokemones usando la url de /pokemon para mostrar a todos los pokemones o elementos del arreglo.
@@ -46,10 +46,9 @@ app.get('/pokemon/:id([1-9]{1,3})',(req,res,next) =>{  // :id([1-9],{1,3}) (esto
     const id = req.params.id - 1; //mandamos llamar el id dado por el usuario en la url y se almacena en una variable
     if (id >= 0 && id <= 150){ //hacemos una condición para verificar que el id dado por el usaurio esté dentro de los existentes en este caso son 151 pokemons pero como el arreglo enpieza en 0 se establece el máximo en 150 ya que el pokemon 151 se encuentra en la pocisión 150.
         res.status(200);
-        res.send(pokemon[req.params.id - 1]); //mostramos en el servidor el arreglo de pokemon y entre corchetes representando la posición del arreglo o llave al parámetro dado por el usuario en la url usando el req.params."variable" y se le resta uno para obtener la pocisión real del arreglo ya que recordemos que los arreglos siempre empiezan en pocisión 0 y no en 1.
+        return res.send(pokemon[req.params.id - 1]); //mostramos en el servidor el arreglo de pokemon y entre corchetes representando la posición del arreglo o llave al parámetro dado por el usuario en la url usando el req.params."variable" y se le resta uno para obtener la pocisión real del arreglo ya que recordemos que los arreglos siempre empiezan en pocisión 0 y no en 1.
     }else{ //else es necesario ya que el res es parecido a un return pero no funciona igual a un return, si se elimina este else se ejecutan los dos al mismo tiempo y causa conflicto. Una forma de solucionarlo es usando el else ó en la linea anterior agregar el comando return.
-        res.status(404);
-        res.send("Pokemon no encontrado");
+       return res.status(404).send("Pokemon no encontrado"); //esta es una forma más fácil de usar el res.status y send al mismo tiempo, sirve para reducir código y optimizarlo.
     }
     
 }); //en esta ruta mandamos llamar a un pokemón en específico usando la variable id como parámetro
@@ -58,16 +57,26 @@ app.listen(3000, () =>{
     //  Esto es una función anónima y que no se puede volver a llamar
     console.log("Server is running...");
 });*/
-app.get('/pokemon/:name',(req,res,next) =>{
+app.get('/pokemon/:name([A-Za-z]+)',(req,res,next) =>{ //:name([A-Za-z]+) - Expresión regular de RegEx para que name acepte puro texto
     const name = req.params.name; //creamos una variable que almacene el dato dado por el usuario
-    for(i=0; i<pokemon.length ; i++){ //creamos un ciclo for que vaya recorriendo todo el arreglo de pokemon (la tabla de la bd)
-        if(pokemon[i].name == name){//creamos una condición en la cual si en el arreglo pokemon[Pocisión]."columna o dato de la tabla de la bd, en este caso es el nombre" , en cierta pocisión se consulta el nombre del pokemon y si este coincide con el que el usuario estableció entonces se imprimen los datos de ese pokemón.
-            res.status(200);
-            res.send(pokemon[i]);
-        }
-    }
-    res.status(404);
-    res.send("Pokemon no encontrado");
+   /* for(i=0; i<pokemon.length ; i++){ //creamos un ciclo for que vaya recorriendo todo el arreglo de pokemon (la tabla de la bd)
+        if(pokemon[i].name.toUpperCase() == name.toUpperCase()){//creamos una condición en la cual si en el arreglo pokemon[Pocisión]."columna o dato de la tabla de la bd, en este caso es el nombre" , en cierta pocisión se consulta el nombre del pokemon y si este coincide con el que el usuario estableció entonces se imprimen los datos de ese pokemón y se le esbalece to uppercase para que lo establecido por el usuario se transforme a mayusculas y que el registro de la bd también se haga mayúscula.
+            return res.status(200).send(pokemon[i]);
+        }//este for es una forma de buscar los valores pero existe una forma más fácil y es la siguiente:
+    }*/
+    const pk = pokemon.filter((p) => { //declaramos una variable para retornar pk y es igual a cada uno de los elementos del arreglo completo de pokemon que es "p"
+        /* if (p.name.toUpperCase() == name.toUpperCase()){//hacemos una condición en la cual si el parámetro name es idéntico al atributo name de alguno de los pokemones en la bd, entonces se retorna ese elemento (para asegurarse de ello se transforman en mayusculas usando el touppercase)
+            return p;
+        }*/ //este if es una forma de hacer la validación pero existe otra forma y es usando el operador ternario, que es una forma simple de hacer un if en una sola línea.
+    
+        //Operador ternario: Condición ? valor si verdadero : valor si falso
+
+        return (p.name.toUpperCase() == name.toUpperCase()) ? p : null; //el return es NECESARIO para poder regresar la operación y lo que salga de esta al filtro y se akmacene en pk ya que si no se usa el return, dará un error.
+    });
+
+    (pk.length > 0) ? res.status(200).send(pk) : res.status(404).send("Pokemon no encontrado"); //si la longitud del arreglo es mayor a 0 entonces se da el elemento encontrado y en caso de que no se cierra y se retorna el pokemon no encontrado
+
+
 });//En esta ruta mandamos llamar a un pokemon en específico usando su nombre como parámetro en vez de su id como la ruta anterior.
 
 app.listen(process.env.PORT || 3000, () =>{//app.listen sirve para montar un servidor de manera sencilla, recibe 2 parámetros, 1. el puerto en el que se va a levantar el servidor (para acceder al puerto en el navegador se escribe localhost:"puerto utilizado"), 2. función que se va a ejecutar cuando el servidor esté levantado.
