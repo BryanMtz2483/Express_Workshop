@@ -1,8 +1,12 @@
 const express = require('express');
 const app = express(); //importamos la librería de express y ponemos su constructor
 //const  pokedex  = require('./pokedex.json'); //Importamos la base de datos completa de pokedex descargada y le especificamos la ruta donde se encuentra.
+const bodyParser = require('body-parser'); // importamos la libreria de body parser y la almacenamos en una variable
 const  {pokemon}  = require('./pokedex.json'); //importamos la base de de datos pero no completa, sino se importa uno de los elementos dentro de la misma y para siempre tener a dispocisión algún arreglo o llave de la bd se mete esa llave o arreglo entre llaves {}, osea extraerlo directamente del require (sirve para extraer un elemento en específico en vez de extraer todos los elementos del archivo seleccionado)
+app.use(express.json()); //importamos todo el paquete de librerias que incluye express la cuál contiene el body parser incluido.
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended : true})); //app.use, el use se utiliza cuando queremos que alguna función se le aplique a todas las peticiones que entran al servidor y se le conoce como middleware, en este caso este middleware nos servirá para obtener el cuerpo de la petición POST y se formatee en formato JSON
 
 /*
 Los verbos HTTP (Son maneras en las que se pueden realizar peticiones entre diferentes entidades dentro de la red),se les llaman verbos por que denotan alguna acción en particular y algunos son:
@@ -37,6 +41,10 @@ app.get("/:name", (req,res,next) =>{//se ponen los dos puntos para hacer que nom
     res.status(200);
     res.send("Bienvenido " + req.params.name); //aquí se imprime un mensaje de bienvenida y se concatena el parametro que se pidió en la url usando el req.params."variable"
 });*/
+app.post('/pokemon', (req,res,next) =>{ //declaramos la misma ruta de abajo pero con la diferencia que ek verbo HTTP ahora es con POST así que no choca.
+    return res.status(200).send(req.body);
+}); //En un navegador convencional esta ruta no funciona ya que el buscador solo usa metodos GET, para ver esta ruta utilizamos el software POSTMAN.
+
 app.get('/pokemon', (req,res,next) => {
     res.status(200);
     res.send(pokemon);
@@ -64,7 +72,7 @@ app.get('/pokemon/:name([A-Za-z]+)',(req,res,next) =>{ //:name([A-Za-z]+) - Expr
             return res.status(200).send(pokemon[i]);
         }//este for es una forma de buscar los valores pero existe una forma más fácil y es la siguiente:
     }*/
-    const pk = pokemon.filter((p) => { //declaramos una variable para retornar pk y es igual a cada uno de los elementos del arreglo completo de pokemon que es "p"
+    const pk = pokemon.filter((p) => { //declaramos una variable para retornar "pk" y es igual a cada uno de los elementos del arreglo completo de pokemon que es "p"
         /* if (p.name.toUpperCase() == name.toUpperCase()){//hacemos una condición en la cual si el parámetro name es idéntico al atributo name de alguno de los pokemones en la bd, entonces se retorna ese elemento (para asegurarse de ello se transforman en mayusculas usando el touppercase)
             return p;
         }*/ //este if es una forma de hacer la validación pero existe otra forma y es usando el operador ternario, que es una forma simple de hacer un if en una sola línea.
