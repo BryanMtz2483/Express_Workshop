@@ -3,8 +3,20 @@ const pokemon = express.Router(); //importamos express y una herramienta del mis
 
 const db = require('../config/database'); //importamos el archivo donde hacemos la conexión a la base de datos de pokemon.sql
 
-pokemon.post('/', (req,res,next) =>{ //declaramos la misma ruta de abajo pero con la diferencia que ek verbo HTTP ahora es con POST así que no choca.
-    return res.status(200).send(req.body);
+pokemon.post('/', async(req,res,next) =>{ //declaramos la misma ruta de abajo pero con la diferencia que ek verbo HTTP ahora es con POST así que no choca.
+    const {pok_name, pok_height,pok_weight, pok_base_experience} = req.body;
+    if(pok_name && pok_height && pok_weight && pok_base_experience){
+        let query = "INSERT INTO pokemon(pok_name, pok_height,pok_weight, pok_base_experience)";
+        query += `VALUES('${pok_name}',${pok_height},${pok_weight},${pok_base_experience})`;
+        
+        const rows = await db.query(query);
+    
+        if (rows.affectedRows == 1){
+            return res.status(201).json({code: 201, message: "Pokemon insertado correctamente."});
+        }
+        return res.status(500).json({code: 500, message: "Ocurrió un error."}); 
+    }
+    return res.status(500).json({code: 500, message: "Campos incompletos"});
 }); //En un navegador convencional esta ruta no funciona ya que el buscador solo usa metodos GET, para ver esta ruta utilizamos el software POSTMAN.
 
 pokemon.get('/', async (req,res,next) => {
@@ -16,7 +28,7 @@ pokemon.get('/:id([1-9]{1,3})',async(req,res,next) =>{  // :id([1-9],{1,3}) (est
     const id = req.params.id; //mandamos llamar el id dado por el usuario en la url y se almacena en una variable
     if (id >= 1 && id <= 722){ 
         const pkmn = await db.query("SELECT * FROM pokemon WHERE pok_id="+id+";");
-        return res.status(200).json({code: 1, message: pkmn});
+        return res.status(200).json({code: 200, message: pkmn});
     }
     return res.status(404).json({code: 404, message: "Pokemon no encontrado"}); 
 }); //en esta ruta mandamos llamar a un pokemón en específico usando la variable id como parámetro
@@ -25,7 +37,7 @@ pokemon.get('/:name([A-Za-z]+)',async(req,res,next) =>{ //:name([A-Za-z]+) - Exp
     const pkmn = await db.query("SELECT * FROM pokemon WHERE pok_name='"+name+"';");
 
     if(pkmn.length > 0){
-        return res.status(200).json({code: 1, message: pkmn});
+        return res.status(200).json({code: 200, message: pkmn});
     }
     return res.status(404).json({code: 404, message: "Pokemon no encontrado"}); 
 
