@@ -4,14 +4,15 @@ const morgan = require('morgan');//Importamos morgan. Morgan es un middleware de
 /*
 const  pokedex  = require('./pokedex.json'); //Importamos la base de datos completa de pokedex descargada y le especificamos la ruta donde se encuentra.
 */
-const bodyParser = require('body-parser'); // importamos la libreria de body parser y la almacenamos en una variable
-app.use(express.json()); //importamos todo el paquete de librerias que incluye express la cuál contiene el body parser incluido.
 const pokemon = require ('./routes/pokemon'); //importamos el archivo de pokemon.js que tenemos en la carpeta de routes
+app.use(express.json());//importamos todo el paquete de librerias que incluye express la cuál contiene el body parser incluido.
+app.use(express.urlencoded({extended:true}));
 
 app.use(morgan('dev'));
+/*
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : true})); //app.use, el use se utiliza cuando queremos que alguna función se le aplique a todas las peticiones que entran al servidor y se le conoce como middleware, en este caso este middleware nos servirá para obtener el cuerpo de la petición POST y se formatee en formato JSON
-
+*/
 /*
 Los verbos HTTP (Son maneras en las que se pueden realizar peticiones entre diferentes entidades dentro de la red),se les llaman verbos por que denotan alguna acción en particular y algunos son:
 
@@ -29,13 +30,14 @@ app.get('/', (req, res, next) =>{ //podemos utilizar los verbos http utilizando 
     /*req es la petición que nos hace el cliente, al hacerla, la información de esa petición se va a guardar en la variable de req.
     res es la respuesta que vamos a dar y es un elemento que podemos a utilizar que contiene varias funciones que permiten contestar la petición que nos hacer el cliente.*/
     //const pokemon = pokedex; //mandamos a llamar a la bd y "pokemon" es el arreglo o llave que contiene todos los datos de los pokemones de la bd descargada. 
-    res.status(200); //Código 200 equivale a que todo salió bien y que recuperamos la información de manera correcta.
-    //res.send(pokemon); //enviamos en el servidor la llave para que se impriman los datos en el mismo, en este caso es el json completo de los pokemons
-    res.send("Bienvenido al Pokedex");
+    res.status(200).json({code: 1, message: "Bienvenido al Pokedex."});
 });
 
 app.use("/pokemon",pokemon); //establecemos que todos los que hagan peticiones a /pokemon sean atendidos por el archivo de pokemon.js para que utilice las funciones que se encuentran dentro del mismo.
 
+app.use((req,res,next)=>{
+    return res.status(404).json({code: 404, message: "Url no encontrado."})
+});
 
 app.listen(process.env.PORT || 3000, () =>{//app.listen sirve para montar un servidor de manera sencilla, recibe 2 parámetros, 1. el puerto en el que se va a levantar el servidor (para acceder al puerto en el navegador se escribe localhost:"puerto utilizado"), 2. función que se va a ejecutar cuando el servidor esté levantado.
     //  Esto es una función anónima y que no se puede volver a llamar
