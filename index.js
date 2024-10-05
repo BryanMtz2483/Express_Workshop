@@ -4,6 +4,7 @@ const morgan = require('morgan');//Importamos morgan. Morgan es un middleware de
 /*
 const  pokedex  = require('./pokedex.json'); //Importamos la base de datos completa de pokedex descargada y le especificamos la ruta donde se encuentra.
 */
+const user = require ("./routes/user");//importamos el archivo de user.js que tenemos en la carpeta de routes
 const pokemon = require ('./routes/pokemon'); //importamos el archivo de pokemon.js que tenemos en la carpeta de routes
 app.use(express.json());//importamos todo el paquete de librerias que incluye express la cuál contiene el body parser incluido.
 app.use(express.urlencoded({extended:true}));
@@ -34,6 +35,8 @@ app.get('/', (req, res, next) =>{ //podemos utilizar los verbos http utilizando 
 });
 
 app.use("/pokemon",pokemon); //establecemos que todos los que hagan peticiones a /pokemon sean atendidos por el archivo de pokemon.js para que utilice las funciones que se encuentran dentro del mismo.
+
+app.use('/user', user);
 
 app.use((req,res,next)=>{
     return res.status(404).json({code: 404, message: "Url no encontrado."})
