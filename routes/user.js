@@ -3,7 +3,7 @@ const user = express.Router(); //importamos express y una herramienta del mismo 
 const jwt = require('jsonwebtoken'); //Importamos la libreria de jsonwebtoken para generar un token de autenticación para que el usuario pueda acceder a la información que nosotros determinemos.
 const db = require('../config/database'); //importamos el archivo donde hacemos la conexión a la base de datos de pokemon.sql
 
-user.post('/', async(req,res,next) => {
+user.post('/signin', async(req,res,next) => {
     const {user_name,user_mail,user_password} = req.body;
     if (user_name && user_mail && user_password){
         let query = "INSERT INTO user(user_name, user_mail, user_password) ";
