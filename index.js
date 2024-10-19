@@ -9,7 +9,9 @@ const pokemon = require ('./routes/pokemon'); //importamos el archivo de pokemon
 const auth = require('./middleware/auth');
 const notFound = require ('./middleware/notFound');
 const index = require ('./middleware/index');
+const cors = require('./middleware/cors');
 
+app.use(cors);
 app.use(express.json());//importamos todo el paquete de librerias que incluye express la cuál contiene el body parser incluido.
 app.use(express.urlencoded({extended:true}));
 
