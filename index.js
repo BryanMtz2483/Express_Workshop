@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+
 /*
 Los verbos HTTP (Son maneras en las que se pueden realizar peticiones entre diferentes entidades dentro de la red),se les llaman verbos por que denotan alguna acción en particular y algunos son:
 
